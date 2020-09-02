@@ -2,7 +2,7 @@
   <div>
     <el-button type="primary" @click="show()">添 加</el-button>
     <!-- 数据展示 -->
-      <!-- <v-table  @emit="emit($event)" ></v-table> -->
+      <v-table  @emit="emit($event)" ></v-table>
       <!-- 表单添加 -->
       <v-list :info="info" @hide="hide()" ref="add"></v-list>
   </div>

@@ -1,15 +1,15 @@
 <template>
   <div>
-    <el-dialog :title="info.title" :visible.sync="info.isShow" >
-      <el-form :model="form">
-        <el-form-item label="手机号" :label-width="width">
+    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="手机号" :label-width="width" prop="phone">
           <el-input v-model="form.phone" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="昵称" :label-width="width">
+        <el-form-item label="昵称" :label-width="width" prop="nickname">
           <el-input v-model="form.nickname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" :label-width="width">
-          <el-input v-model="form.password" autocomplete="off"></el-input>
+          <el-input v-model="pwd" autocomplete="off"></el-input>
         </el-form-item>
         
         <el-form-item label="状态" :label-width="width">
@@ -39,6 +39,15 @@ export default {
         password:"",
         status: 1,
       },
+      rules:{
+        phone:[
+         { required: true, message: '请输入手机号', trigger: 'blur' },
+        ],
+        nickname:[
+         { required: true, message: '请输入昵称', trigger: 'blur' },
+        ]
+      },
+      pwd:'',
       defaultProps: {
         children: "children",
         label: "title",
@@ -54,6 +63,10 @@ export default {
     ...mapActions({
       changeList: "member/changeMember",
     }),
+    // closed
+     close() {
+      this.$refs.rule.clearValidate()
+    },
     hide() {
       this.info.isShow = false;
     },
@@ -66,9 +79,11 @@ export default {
     },
     // 编辑查看信息
     look(id){
+      
       reqMemberDetail(id).then(res=>{
         if(res.data.code == 200){
           this.form = res.data.list;
+          this.form.password = this.pwd?this.pwd:res.data.list.password
           this.uid = id;
         }else {
           warningAlert(res.data.msg)
@@ -77,7 +92,14 @@ export default {
     },
     // 修改信息
     reset(){
-        console.log(this.form);
+       if(this.form.phone===''){
+        warningAlert("请填写手机号")
+        return
+      }
+       if(this.form.nickname===''){
+        warningAlert("请填写昵称")
+        return
+      }
       reqMemberReset(this.form).then(res=>{
         if(res.data.code == 200){
           successAlert(res.data.msg);

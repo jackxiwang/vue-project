@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
-      <el-form :model="form">
-        <el-form-item label="菜单名称" :label-width="width">
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="菜单名称" :label-width="width" prop="title">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="上级菜单" :label-width="width">
+        <el-form-item label="上级菜单" :label-width="width" prop="pid">
           <el-select v-model="form.pid" @change="changePid">
             <el-option label="顶级菜单" :value="0"></el-option>
             <el-option v-for="item in list" :key="item.id" :label="item.title" :value="item.id"></el-option>
@@ -71,6 +71,14 @@ export default {
         url: "",
         status: 1,
       },
+      rules:{
+        title: [
+            { required: true, message: '请输入菜单名称', trigger: 'blur' },
+          ],
+          pid: [
+            { required: true, message: '请选择', trigger: 'change' }
+          ]
+      },
       width: "180px",
     };
   },
@@ -85,7 +93,7 @@ export default {
     }),
     // closed
     close() {
-      console.log(this.info.edit);
+      this.$refs.rule.clearValidate()
       if (this.info.edit) {
         this.empty()
       }
@@ -116,6 +124,11 @@ export default {
     },
     // 修改按钮点击
     reset() {
+      this.$refs.rule.clearValidate()
+      if(this.form.title===''){
+        warningAlert("请填写菜单名称")
+        return
+      }
       reqMenuReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -129,6 +142,11 @@ export default {
     },
     // 添加按钮点击
     add() {
+      this.$refs.rule.clearValidate()
+      if(this.form.title===''){
+        warningAlert("请填写菜单名称")
+        return
+      }
       reqMenuaddList(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);

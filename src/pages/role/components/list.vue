@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isShow" @closed = 'close'>
-      <el-form :model="form">
-        <el-form-item label="角色名称" :label-width="width">
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="角色名称" :label-width="width" prop="rolename">
           <el-input v-model="form.rolename" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="角色权限" :label-width="width">
@@ -38,6 +38,11 @@ export default {
         children: "children",
         label: "title",
       },
+      rules:{
+        rolename:[
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ]
+      }
     };
   },
   computed: {
@@ -52,6 +57,7 @@ export default {
       reqRoleList: "role/changeRole",
     }),
     close(){
+      this.$refs.rule.clearValidate()
       this.info.edit && this.empty();
     },
     hide() {
@@ -67,6 +73,11 @@ export default {
     },
     // 添加信息
     add() {
+      this.$refs.rule.clearValidate()
+      if(this.form.rolename === ''){
+        warningAlert('请填写角色名称')
+        return
+      }
       let menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
       this.form.menus = menus;
       reqRoleAddList(this.form).then((res) => {
@@ -94,6 +105,11 @@ export default {
     },
     // 修改信息
     reset(){
+      this.$refs.rule.clearValidate()
+      if(this.form.rolename === ''){
+        warningAlert('请填写角色名称')
+        return
+      }
       let menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
       this.form.menus = menus;
       reqRoleReset(this.form).then(res=>{

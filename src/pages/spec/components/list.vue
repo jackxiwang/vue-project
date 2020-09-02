@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
-      <el-form :model="form">
-        <el-form-item label="规格名称" :label-width="width">
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="规格名称" :label-width="width" prop="specsname">
           <el-input v-model="form.specsname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item
@@ -58,6 +58,12 @@ export default {
         attrs: "",
         status: 1,
       },
+      rules:{
+        specsname: [
+            { required: true, message: '请输入菜单名称', trigger: 'blur' },
+          ]
+          
+      },
       width: "180px",
     };
   },
@@ -81,6 +87,7 @@ export default {
     },
     // closed
     close() {
+      this.$refs.rule.clearValidate()
       if (this.info.edit) {
         this.empty();
       }
@@ -106,6 +113,11 @@ export default {
     },
     // 修改按钮点击
     reset() {
+       this.$refs.rule.clearValidate()
+      if(this.form.specsname===''){
+        warningAlert("请填写菜单名称")
+        return
+      }
       let attrs = this.attrList.map((item) => item.value);
       this.form.attrs = JSON.stringify(attrs);
       reqSpecsReset(this.form).then((res) => {
@@ -122,6 +134,11 @@ export default {
     },
     // 添加按钮点击
     add() {
+      this.$refs.rule.clearValidate()
+      if(this.form.specsname===''){
+        warningAlert("请填写菜单名称")
+        return
+      }
       let attrs = this.attrList.map((item) => item.value);
       this.form.attrs = JSON.stringify(attrs);
       reqSpecsaddList(this.form).then((res) => {

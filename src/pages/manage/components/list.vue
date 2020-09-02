@@ -1,15 +1,19 @@
 <template>
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
-      <el-form :model="form">
-        <el-form-item label="所属角色" :label-width="width">
-          <el-select v-model="form.roleid" >
-            <el-option label='请选择' value="" disabled></el-option>
-            <el-option v-for="item in roleData" :key="item.id" :label="item.rolename" :value="item.id"></el-option>
-
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="所属角色" :label-width="width" prop="roleid">
+          <el-select v-model="form.roleid">
+            <el-option label="请选择" value="" disabled></el-option>
+            <el-option
+              v-for="item in roleData"
+              :key="item.id"
+              :label="item.rolename"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户名称" :label-width="width">
+        <el-form-item label="用户名称" :label-width="width" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="用户密码" :label-width="width">
@@ -42,26 +46,35 @@ export default {
     return {
       width: "180px",
       form: {
-        roleid:'',
+        roleid: "",
         username: "",
         password: "",
         status: 1,
+      },
+      rules: {
+        roleid: [
+          { required: true, message: "请选择所属角色", trigger: "change" },
+        ],
+        username: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+        ],
       },
     };
   },
   computed: {
     ...mapGetters({
       roleData: "role/list",
-      manDate:"manage/list"
+      manDate: "manage/list",
     }),
   },
   methods: {
     ...mapActions({
-      reqUserList:"manage/changeManage",
-      reqRoleList:"role/changeRole",
-      changeTotal:"manage/changeTotalAction"
+      reqUserList: "manage/changeManage",
+      reqRoleList: "role/changeRole",
+      changeTotal: "manage/changeTotalAction",
     }),
     close() {
+      this.$refs.rule.clearValidate();
       this.info.edit && this.empty();
     },
     hide() {
@@ -73,11 +86,19 @@ export default {
         username: "",
         password: "",
         status: 1,
-      }
+      };
     },
     // 添加信息
     add() {
-      console.log(this.form);
+      this.$refs.rule.clearValidate();
+      if (this.form.username === "") {
+        warningAlert("请填写用户名");
+        return;
+      }
+      if(this.form.roleid === ''){
+        warningAlert("请选择所属角色")
+        return
+      }
       reqUseraddList(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -86,8 +107,8 @@ export default {
           // 刷新页面
           this.reqUserList();
           // 总数改变
-          this.changeTotal()
-          // 
+          this.changeTotal();
+          //
         } else {
           warningAlert(res.data.msg);
         }
@@ -98,7 +119,7 @@ export default {
       reqUserDetail(id).then((res) => {
         if (res.data.code == 200) {
           this.form = res.data.list;
-          this.form.password = '';
+          this.form.password = "";
         } else {
           warningAlert(res.data.msg);
         }
@@ -106,6 +127,15 @@ export default {
     },
     // 修改信息
     reset() {
+      this.$refs.rule.clearValidate();
+      if (this.form.username === "") {
+        warningAlert("请填写用户名");
+        return;
+      }
+      if(this.form.roleid === ''){
+        warningAlert("请选择所属角色")
+        return
+      }
       reqUserReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);

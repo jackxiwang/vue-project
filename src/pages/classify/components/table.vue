@@ -12,7 +12,7 @@
       <el-table-column prop="catename" label="分类名称" sortable width="180"></el-table-column>
       <el-table-column prop='img' label="图片" sortable width="180">
         <template slot-scope="scope">
-          <img :src="$preImg+scope.row.img" alt="" class="addImg">
+          <img :src="$preImg+scope.row.img" alt="" class="addImg" >
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态">

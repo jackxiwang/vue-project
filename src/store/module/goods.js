@@ -20,8 +20,9 @@ const mutations = {
     }
 }
 const actions = {
-    changeGoods(context) {
-        reqGoodsList({ page:context.state.page, size: context.state.size,fid:null,sid:null }).then(res => {
+    changeGoods(context,bool) {
+       let param = bool?{}:{ page:context.state.page, size: context.state.size,fid:null,sid:null };
+        reqGoodsList(param).then(res => {
             let arr = res.data.list === null ? [] : res.data.list;
             context.commit('changeGoodsList', arr)
         })

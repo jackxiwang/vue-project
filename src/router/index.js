@@ -83,7 +83,6 @@ const router = new Router({
 })
 // 全局路由
 router.beforeEach((to, from, next) => {
-  console.log(store);
   if (to.path === '/login') {
     next()
     return

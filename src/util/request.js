@@ -270,9 +270,9 @@ export const reqCateDel=(id)=>{
     return axios({
         url:base +'/api/catedelete',
         method:'post',
-        data:{
-            uid:id
-        }
+        data:qs.stringify({
+            id
+        })
     })
 }
 
@@ -458,19 +458,16 @@ export const reqGoodsDel=(id)=>{
 /*-------------------------------秒杀---------------------------------------------- */
 
 // 秒杀列表添加
-export const reqseckAddList = (params)=>{
-    let data = new FormData();
-    for(let i in params){
-        data.append(i,params[i])
-    }
+export const reqSeckAddList = (params)=>{
+    
     return axios({
         url:base+'/api/seckadd',
         method:'post',
-        data
+        data:qs.stringify(params)
     })
 }
 // 秒杀列表
-export const reqseckList = (params)=>{
+export const reqSeckList = (params)=>{
     return axios({
         url:base+'/api/secklist',
         method:'get',
@@ -478,7 +475,7 @@ export const reqseckList = (params)=>{
     })
 }
 // 秒杀单独一条
-export const reqseckDetail = (id)=>{
+export const reqSeckDetail = (id)=>{
     return axios({
         url:base+'/api/seckinfo',
         method:'get',
@@ -488,7 +485,7 @@ export const reqseckDetail = (id)=>{
     })
 }
 // 秒杀修改
-export const reqseckReset = (params)=>{
+export const reqSeckReset = (params)=>{
     let data = new FormData();
     for(let i in params){
         data.append(i,params[i])
@@ -499,15 +496,9 @@ export const reqseckReset = (params)=>{
         data
     })
 }
-// 总数
-export const reqseckTotal = ()=>{
-    return axios({
-        url:base+'/api/seckcount',
-        method:'get'
-    })
-}
+
 // 秒杀删除
-export const reqseckDel=(id)=>{
+export const reqSeckDel=(id)=>{
     return axios({
         url:base +'/api/seckdelete',
         method:'post',
