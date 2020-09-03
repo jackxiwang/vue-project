@@ -143,7 +143,7 @@ export default {
     },
     // 时间日期
     showTime() {
-      if (this.time !== null) {
+      if (this.time !== null || this.time.length>0) {
         this.form.begintime = this.time[0];
         this.form.endtime = this.time[1];
       }
@@ -173,7 +173,7 @@ export default {
         warningAlert("请输入活动名称");
         return true;
       }
-      if (this.time == null ) {
+      if (this.time == null || this.time.length == 0 ) {
         warningAlert("请选择日期");
         return true;
       }

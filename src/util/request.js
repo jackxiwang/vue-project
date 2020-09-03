@@ -9,7 +9,7 @@ axios.interceptors.request.use(config=>{
     if(config.url == base+'/api/userlogin'){
         return config
     }
-    config.headers.authorization = store.state.user.msg.token;
+   config.headers.authorization=store.state.user.msg.token;
     return config
 })
 // 响应拦截
