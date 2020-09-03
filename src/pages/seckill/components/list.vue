@@ -1,13 +1,19 @@
 <template>
   <div>
-    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close" width="60%"  >
-      <el-form :model="form">
-        <el-form-item label="活动名称" :label-width="width">
+    <el-dialog
+      :title="info.title"
+      :visible.sync="info.isShow"
+      @closed="close"
+      width="60%"
+      @opened="open"
+    >
+      <el-form :model="form" :rules="rules" ref="rule">
+        <el-form-item label="活动名称" :label-width="width" prop="title">
           <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="活动期限" :label-width="width">
+        <el-form-item label="活动期限" :label-width="width" prop="begintime">
           <div class="block">
-            <span class="demonstration">{{time}}</span>
+            <!-- <span class="demonstration"></span> -->
             <el-date-picker
               v-model="time"
               type="datetimerange"
@@ -19,9 +25,9 @@
             ></el-date-picker>
           </div>
         </el-form-item>
-        <el-form-item label="一级分类" :label-width="width">
+        <el-form-item label="一级分类" :label-width="width" prop="first_cateid">
           <el-select v-model="form.first_cateid" @change="changeFirst">
-            <el-option label="请选择" :value="0" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in cateList"
               :key="item.id"
@@ -30,9 +36,9 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="二级分类" :label-width="width">
+        <el-form-item label="二级分类" :label-width="width" prop="second_cateid">
           <el-select v-model="form.second_cateid" @change="changeSecond">
-            <el-option label="请选择" :value="0" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in cateDetailList"
               :key="item.id"
@@ -42,9 +48,9 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="商品" :label-width="width">
+        <el-form-item label="商品" :label-width="width" prop="goodsid">
           <el-select v-model="form.goodsid">
-            <el-option label="请选择" :value="0" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in goodsDetailList"
               :key="item.id"
@@ -57,7 +63,6 @@
         <el-form-item label="状态" :label-width="width">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="2"></el-switch>
         </el-form-item>
-        {{form}}
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -94,6 +99,20 @@ export default {
         goodsid: "",
         status: 1,
       },
+      rules: {
+        title: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
+        begintime: [
+          { required: true, message: "请选择活动期限", trigger: "change" },
+        ],
+        first_cateid: [
+          { required: true, message: "请选择一级分类", trigger: "change" },
+        ],
+        second_cateid: [
+          { required: true, message: "请选择二级分类", trigger: "change" },
+        ],
+        goodsid: [{ required: true, message: "请选择商品", trigger: "change" }],
+      },
+
       time: [],
       width: "180px",
     };
@@ -112,17 +131,22 @@ export default {
       changeGoods: "goods/changeGoods",
       changeSeck: "seckill/changeSeck",
     }),
+    open() {
+      this.$refs.rule.clearValidate();
+    },
     // closed
     close() {
+      this.$refs.rule.clearValidate();
       if (this.info.edit) {
         this.empty();
       }
     },
     // 时间日期
     showTime() {
-      this.form.begintime = this.time[0];
-      this.form.endtime = this.time[1];
-      
+      if (this.time !== null) {
+        this.form.begintime = this.time[0];
+        this.form.endtime = this.time[1];
+      }
     },
     // 改变商品分类一级
     changeFirst() {
@@ -143,6 +167,29 @@ export default {
       });
       this.form.goodsid = "";
     },
+    test() {
+      this.$refs.rule.clearValidate();
+      if (this.form.title == "") {
+        warningAlert("请输入活动名称");
+        return true;
+      }
+      if (this.time == null ) {
+        warningAlert("请选择日期");
+        return true;
+      }
+      if (this.form.first_cateid == "") {
+        warningAlert("请选择一级分类");
+        return true;
+      }
+      if (this.form.second_cateid == "") {
+        warningAlert("请选择二级分类");
+        return true;
+      }
+      if (this.form.goodsid == "") {
+        warningAlert("请选择商品");
+        return true;
+      }
+    },
 
     // 重置form
     empty() {
@@ -159,12 +206,11 @@ export default {
     },
     // 编辑菜单
     look(id) {
-      console.log(this.form);
       reqSeckDetail(id).then((res) => {
         if (res.data.code == 200) {
           this.form = res.data.list;
-          this.time.push(res.data.list.begintime)
-          this.time.push(res.data.list.endtime)
+          this.time.push(res.data.list.begintime);
+          this.time.push(res.data.list.endtime);
           this.cateDetailList = this.cateList.find(
             (item) => item.id == this.form.first_cateid
           ).children;
@@ -182,6 +228,9 @@ export default {
     },
     // 修改按钮点击
     reset() {
+      if (this.test()) {
+        return;
+      }
       reqSeckReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -196,6 +245,9 @@ export default {
     },
     // 添加按钮点击
     add() {
+      if (this.test()) {
+        return;
+      }
       reqSeckAddList(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -222,32 +274,32 @@ export default {
 };
 </script>
 <style scoped>
-  .file-add {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    line-height: 100px;
-    text-align: center;
-    overflow: hidden;
-    border: 1px dashed #ccc;
-    border-radius: 8px;
-  }
-  .file-add span {
-    font-size: 40px;
-  }
-  .file-add img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  .file-add input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-  }
+.file-add {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  line-height: 100px;
+  text-align: center;
+  overflow: hidden;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+}
+.file-add span {
+  font-size: 40px;
+}
+.file-add img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.file-add input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
 </style>

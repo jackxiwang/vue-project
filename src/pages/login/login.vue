@@ -2,8 +2,14 @@
   <div class="main">
     <div class="con">
       <h3>登录</h3>
-      <el-input v-model="user.username" clearable></el-input>
-      <el-input v-model="user.password" clearable show-password></el-input>
+      <el-form :model="user" :rules="rules" ref="rule">
+        <el-form-item prop="username">
+          <el-input v-model="user.username" clearable></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input v-model="user.password" clearable show-password></el-input>
+        </el-form-item>
+      </el-form>
       <el-button type="primary" @click="login()">登录</el-button>
     </div>
   </div>
@@ -20,6 +26,14 @@ export default {
         username: "",
         password: "",
       },
+      rules:{
+        username:[
+          { required: true, message: '请输入账户', trigger: 'blur' }
+        ],
+        password:[
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
     };
   },
 
@@ -28,6 +42,10 @@ export default {
       changeUser: "user/changeUserAction",
     }),
     login() {
+      if(this.user.username==='' || this.user.password===''){
+        warningAlert('请输入账户名或密码')
+        return
+      }
       reqLogin(this.user).then((res) => {
         if (res.data.code == 200) {
           successAlert("成功登录");

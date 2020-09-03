@@ -15,7 +15,7 @@
           <el-radio v-model="form.type" :label="1" disabled>目录</el-radio>
           <el-radio v-model="form.type" :label="2" disabled>菜单</el-radio>
         </el-form-item>
-        <el-form-item label="菜单图标" :label-width="width" v-if="form.type==1">
+        <el-form-item label="菜单图标" :label-width="width" v-if="form.type==1" prop="icon">
           <el-select v-model="form.icon">
             <el-option value="el-icon-setting">
               <i class="el-icon-setting"></i>
@@ -28,7 +28,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单地址" :label-width="width" v-else>
+        <el-form-item label="菜单地址" :label-width="width" v-else prop="url">
           <el-select v-model="form.url">
             <el-option
               v-for="item in loginChild"
@@ -77,7 +77,14 @@ export default {
           ],
           pid: [
             { required: true, message: '请选择', trigger: 'change' }
+          ],
+          icon: [
+            { required: true, message: '请选择', trigger: 'change' }
+          ],
+          url:[
+            { required: true, message: '请选择', trigger: 'change' }
           ]
+
       },
       width: "180px",
     };
@@ -129,6 +136,10 @@ export default {
         warningAlert("请填写菜单名称")
         return
       }
+      if(this.form.type==1 && this.form.icon===''){
+        warningAlert("请填写菜单图标")
+        return
+      }
       reqMenuReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -145,6 +156,14 @@ export default {
       this.$refs.rule.clearValidate()
       if(this.form.title===''){
         warningAlert("请填写菜单名称")
+        return
+      }
+      if(this.form.type==1 && this.form.icon===''){
+        warningAlert("请填写菜单图标")
+        return
+      }
+      if(this.form.type !=1 && this.form.url === ''){
+        warningAlert('请填写菜单地址')
         return
       }
       reqMenuaddList(this.form).then((res) => {

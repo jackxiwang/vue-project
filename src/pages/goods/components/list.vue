@@ -10,7 +10,7 @@
       <el-form :model="form" :rules="rules" ref="rule">
         <el-form-item label="一级分类" :label-width="width" prop="first_cateid">
           <el-select v-model="form.first_cateid" @change="changeFirst">
-            <el-option label="请选择" value="" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in cateList"
               :key="item.id"
@@ -21,7 +21,7 @@
         </el-form-item>
         <el-form-item label="二级分类" :label-width="width" prop="second_cateid">
           <el-select v-model="form.second_cateid">
-            <el-option label="请选择" value="" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in cateDetailList"
               :key="item.id"
@@ -34,10 +34,10 @@
         <el-form-item label="商品名称" :label-width="width" prop="goodsname">
           <el-input v-model="form.goodsname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="价格" :label-width="width">
+        <el-form-item label="价格" :label-width="width" prop="price">
           <el-input v-model="form.price" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="市场价格" :label-width="width">
+        <el-form-item label="市场价格" :label-width="width" prop="market_price">
           <el-input v-model="form.market_price" autocomplete="off"></el-input>
         </el-form-item>
 
@@ -48,9 +48,9 @@
             <input type="file" @change="addImg" />
           </div>
         </el-form-item>
-        <el-form-item label="商品规格" :label-width="width">
+        <el-form-item label="商品规格" :label-width="width" prop="specsid">
           <el-select v-model="form.specsid" @change="changeAttr">
-            <el-option label="请选择" value="" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option
               v-for="item in specList"
               :key="item.id"
@@ -59,9 +59,9 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="规格属性" :label-width="width">
+        <el-form-item label="规格属性" :label-width="width" prop="specsattr">
           <el-select v-model="form.specsattr" multiple>
-            <el-option label="请选择" :value="0" disabled></el-option>
+            <el-option label="请选择" value disabled></el-option>
             <el-option v-for="item in specDetailList" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
@@ -77,7 +77,7 @@
         <el-form-item label="状态" :label-width="width">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="2"></el-switch>
         </el-form-item>
-        <el-form-item label="商品描述" :label-width="width">
+        <el-form-item label="商品描述" :label-width="width" prop="description">
           <!-- <textarea cols="30" rows="10" v-model="form.description"></textarea>
           -->
           <div id="editor" v-if="info.isShow"></div>
@@ -119,21 +119,29 @@ export default {
         description: "",
         specsid: "",
         specsattr: [],
-        isnew: "",
-        ishot: "",
+        isnew: 1,
+        ishot: 1,
         img: null,
         status: 1,
       },
-      rules:{
+      rules: {
         goodsname: [
-            { required: true, message: '请输入商品名称', trigger: 'blur' },
-          ],
-          first_cateid: [
-            { required: true, message: '请选择', trigger: 'change' }
-          ],
-          second_cateid: [
-            { required: true, message: '请选择', trigger: 'change' }
-          ],
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+        ],
+        description: [
+          { required: true, message: "请输入描述", trigger: "blur" },
+        ],
+        first_cateid: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+        second_cateid: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+
+        price: [{ required: true, message: "请输入价格", trigger: "blur" }],
+        market_price: [{ required: true, message: "请填写市场价格", trigger: "blur" }],
+        specsid: [{ required: true, message: "请选择商品规格", trigger: "change" }],
+        specsattr: [{ required: true, message: "请选择规格属性", trigger: "change" }],
       },
       width: "180px",
     };
@@ -153,7 +161,7 @@ export default {
     }),
     // closed
     close() {
-      this.$refs.rule.clearValidate()
+      this.$refs.rule.clearValidate();
       if (this.info.edit) {
         this.empty();
       }
@@ -173,11 +181,10 @@ export default {
     },
     // 改变商品规格
     changeAttr() {
-      console.log(this.form.specsid);
       this.specDetailList = this.specList.find(
         (item) => item.id == this.form.specsid
       ).attrs;
-      this.form.specsattr = "";
+      this.form.specsattr = [];
     },
     // 图片上传处理
     addImg(e) {
@@ -205,13 +212,15 @@ export default {
         market_price: "",
         description: "",
         specsid: "",
-        specsattr: "",
+        specsattr: [],
         isnew: "",
         ishot: "",
         img: null,
         status: 1,
       };
-      this.imgUrl = "";
+      this.cateDetailList = [];
+        this.specDetailList = [];
+        this.imgUrl = "";
     },
     // 编辑菜单
     look(id) {
@@ -232,19 +241,36 @@ export default {
     },
     // 修改按钮点击
     reset() {
-      this.$refs.rule.clearValidate()
-      if(this.form.goodsname===''){
-        warningAlert("请填写菜单名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.goodsname === "") {
+        warningAlert("请填写菜单名称");
+        return;
       }
-      if(this.form.first_cateid === ''){
-        warningAlert('请选择一级分类')
-        return
+      if (this.form.first_cateid === "") {
+        warningAlert("请选择一级分类");
+        return;
       }
-      if(this.form.second_cateid === ''){
-        warningAlert('请选择二级分类')
-        return
+      if (this.form.second_cateid === "") {
+        warningAlert("请选择二级分类");
+        return;
       }
+      if (this.form.price === "") {
+        warningAlert("请填写价格");
+        return;
+      }
+      if (this.form.market_price === "") {
+        warningAlert("请填写市场价格");
+        return;
+      }
+      if (this.form.specsid === "") {
+        warningAlert("请选择商品规格");
+        return;
+      }
+      if (this.form.specsattr.length === 0) {
+        warningAlert("请选择规格属性");
+        return;
+      }
+
       this.form.description = this.editor.txt.html();
       reqGoodsReset(this.form).then((res) => {
         if (res.data.code == 200) {
@@ -260,18 +286,18 @@ export default {
     },
     // 添加按钮点击
     add() {
-      this.$refs.rule.clearValidate()
-      if(this.form.goodsname===''){
-        warningAlert("请填写菜单名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.goodsname === "") {
+        warningAlert("请填写菜单名称");
+        return;
       }
-       if(this.form.first_cateid === ''){
-        warningAlert('请选择一级分类')
-        return
+      if (this.form.first_cateid === "") {
+        warningAlert("请选择一级分类");
+        return;
       }
-      if(this.form.second_cateid === ''){
-        warningAlert('请选择一级分类')
-        return
+      if (this.form.second_cateid === "") {
+        warningAlert("请选择一级分类");
+        return;
       }
       this.form.description = this.editor.txt.html();
       reqGoodsAddList(this.form).then((res) => {

@@ -91,14 +91,15 @@ export default {
     // 添加信息
     add() {
       this.$refs.rule.clearValidate();
-      if (this.form.username === "") {
-        warningAlert("请填写用户名");
-        return;
-      }
       if(this.form.roleid === ''){
         warningAlert("请选择所属角色")
         return
       }
+      if (this.form.username === "") {
+        warningAlert("请填写用户名");
+        return;
+      }
+      
       reqUseraddList(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -128,14 +129,15 @@ export default {
     // 修改信息
     reset() {
       this.$refs.rule.clearValidate();
-      if (this.form.username === "") {
-        warningAlert("请填写用户名");
-        return;
-      }
       if(this.form.roleid === ''){
         warningAlert("请选择所属角色")
         return
       }
+      if (this.form.username === "") {
+        warningAlert("请填写用户名");
+        return;
+      }
+      
       reqUserReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);

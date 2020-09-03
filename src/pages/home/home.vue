@@ -35,22 +35,23 @@ export default {
             },
             xAxis: {
               data:this.list.map(item => item.catename)
-                // data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
             },
             yAxis: {},
             series: [{
                 name: '详情',
                 type: 'line',
-              data:this.list.map(item => item.children.length)
-                // data: [5, 20, 36, 10, 10, 20]
+              data:this.list.map(item => item.children?item.children.length:0)
             }]
         };
+        
         myChart.setOption(option);
 
 
       }
+    },
+    deep:true
     }
-    }
+    
   }
 }
 

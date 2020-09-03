@@ -16,7 +16,6 @@ axios.interceptors.request.use(config=>{
 axios.interceptors.response.use(res=>{
     console.log('======='+res.config.url+'=======');
     console.log(res);
-    
     if(res.data.msg == '登录已过期或访问权限受限'){
         warningAlert('登录已过期或访问权限受限')
         store.dispatch('user/changeUserAction', {})

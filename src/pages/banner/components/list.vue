@@ -2,8 +2,8 @@
   <div>
     <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
       <el-form :model="form" :rules="rules" ref="rule">
-        <el-form-item label="标题" :label-width="width">
-          <el-input v-model="form.title" autocomplete="off" prop="title"></el-input>
+        <el-form-item label="标题" :label-width="width" prop="title">
+          <el-input v-model="form.title" autocomplete="off" ></el-input>
         </el-form-item>
 
         <el-form-item label="图片" :label-width="width">
@@ -47,7 +47,7 @@ export default {
         status: 1,
       },
       rules: {
-        title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+        title: [{ required: true, message: "请输入标题", trigger: "blur" }]
       },
       width: "180px",
     };
@@ -110,6 +110,10 @@ export default {
         warningAlert("请输入标题");
         return;
       }
+      if(this.form.img===null){
+        warningAlert('请上传图片')
+        return
+      }
       reqBannerReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
@@ -128,6 +132,10 @@ export default {
       if (this.form.title === "") {
         warningAlert("请输入标题");
         return;
+      }
+      if(this.form.img===null){
+        warningAlert('请上传图片')
+        return
       }
       reqBannerAddList(this.form).then((res) => {
         if (res.data.code == 200) {

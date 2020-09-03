@@ -13,7 +13,7 @@
         >
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-input v-model="item.value" autocomplete="off"></el-input>
+              <el-input v-model="item.value" autocomplete="off" prop="attrList"></el-input>
             </el-col>
             <el-col :span="4">
               <el-button type="primary" v-if="index==0" @click="addAttr">新增规格属性</el-button>
@@ -58,11 +58,10 @@ export default {
         attrs: "",
         status: 1,
       },
-      rules:{
+      rules: {
         specsname: [
-            { required: true, message: '请输入菜单名称', trigger: 'blur' },
-          ]
-          
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+        ],
       },
       width: "180px",
     };
@@ -75,8 +74,8 @@ export default {
   methods: {
     ...mapActions({
       changeSpec: "spec/changeSpec",
-      changeTotal:"spec/changeTotalAction",
-      changePage:"spec/changePageAction"
+      changeTotal: "spec/changeTotalAction",
+      changePage: "spec/changePageAction",
     }),
     // 新增标签
     addAttr() {
@@ -87,7 +86,7 @@ export default {
     },
     // closed
     close() {
-      this.$refs.rule.clearValidate()
+      this.$refs.rule.clearValidate();
       if (this.info.edit) {
         this.empty();
       }
@@ -99,24 +98,26 @@ export default {
         attrs: "",
         status: 1,
       };
-      this.attrList = [{value:''}]
+      this.attrList = [{ value: "" }];
     },
     // 编辑菜单
     look(id) {
       reqSpecsDetail(id).then((res) => {
         if (res.data.code == 200) {
           this.form = res.data.list[0];
-          this.attrList = JSON.parse(res.data.list[0].attrs).map(item=> { return {'value':item}})
+          this.attrList = JSON.parse(res.data.list[0].attrs).map((item) => {
+            return { value: item };
+          });
           this.form.id = id;
         }
       });
     },
     // 修改按钮点击
     reset() {
-       this.$refs.rule.clearValidate()
-      if(this.form.specsname===''){
-        warningAlert("请填写菜单名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.specsname === "") {
+        warningAlert("请填写菜单名称");
+        return;
       }
       let attrs = this.attrList.map((item) => item.value);
       this.form.attrs = JSON.stringify(attrs);
@@ -134,26 +135,31 @@ export default {
     },
     // 添加按钮点击
     add() {
-      this.$refs.rule.clearValidate()
-      if(this.form.specsname===''){
-        warningAlert("请填写菜单名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.specsname === "") {
+        warningAlert("请填写菜单名称");
+        return;
       }
       let attrs = this.attrList.map((item) => item.value);
+      if (attrs.length <= 1 || attrs[0] === "") {
+        warningAlert("请填写商品属性");
+        return;
+      }
       this.form.attrs = JSON.stringify(attrs);
-      reqSpecsaddList(this.form).then((res) => {
-        if (res.data.code == 200) {
-          successAlert(res.data.msg);
-          this.empty();
-          this.$emit("hide");
-          // 刷新页面
-          this.changeSpec();
-          // 重置总数
-          this.changeTotal()
-        } else {
-          warningAlert(res.data.msg);
-        }
-      });
+      if (this.form.attrs)
+        reqSpecsaddList(this.form).then((res) => {
+          if (res.data.code == 200) {
+            successAlert(res.data.msg);
+            this.empty();
+            this.$emit("hide");
+            // 刷新页面
+            this.changeSpec();
+            // 重置总数
+            this.changeTotal();
+          } else {
+            warningAlert(res.data.msg);
+          }
+        });
     },
     hide() {
       this.$emit("hide");
