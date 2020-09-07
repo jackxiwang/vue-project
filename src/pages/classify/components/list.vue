@@ -52,13 +52,11 @@ export default {
         img: "",
         status: 1,
       },
-      rules:{
+      rules: {
         catename: [
-            { required: true, message: '请输入菜单名称', trigger: 'blur' },
-          ],
-          pid: [
-            { required: true, message: '请选择', trigger: 'change' }
-          ]
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+        ],
+        pid: [{ required: true, message: "请选择", trigger: "change" }],
       },
       width: "180px",
     };
@@ -74,7 +72,7 @@ export default {
     }),
     // closed
     close() {
-      this.$refs.rule.clearValidate()
+      this.$refs.rule.clearValidate();
       if (this.info.edit) {
         this.empty();
       }
@@ -117,10 +115,10 @@ export default {
     },
     // 修改按钮点击
     reset() {
-      this.$refs.rule.clearValidate()
-      if(this.form.catename===''){
-        warningAlert("请填写分类名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.catename === "") {
+        warningAlert("请填写分类名称");
+        return;
       }
       reqCateReset(this.form).then((res) => {
         if (res.data.code == 200) {
@@ -136,10 +134,16 @@ export default {
     },
     // 添加按钮点击
     add() {
-      this.$refs.rule.clearValidate()
-      if(this.form.catename===''){
-        warningAlert("请填写分类名称")
-        return
+      this.$refs.rule.clearValidate();
+      if (this.form.catename === "") {
+        warningAlert("请填写分类名称");
+        return;
+      }
+      if (this.form.pid !== 0) {
+        if (this.form.img === "") {
+          warningAlert("请上传图片");
+          return;
+        }
       }
       reqCateaddList(this.form).then((res) => {
         if (res.data.code == 200) {

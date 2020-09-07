@@ -485,14 +485,11 @@ export const reqSeckDetail = (id)=>{
 }
 // 秒杀修改
 export const reqSeckReset = (params)=>{
-    let data = new FormData();
-    for(let i in params){
-        data.append(i,params[i])
-    }
+
     return axios({
         url:base+'/api/seckedit',
         method:'post',
-        data
+        data:qs.stringify(params)
     })
 }
 

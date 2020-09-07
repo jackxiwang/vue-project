@@ -28,6 +28,7 @@
       :pager-count="5"
       layout="prev, pager, next"
       :total="total"
+      :current-page = "page"
       background
       @current-change="changeCurrent"
     ></el-pagination>
@@ -73,6 +74,7 @@ export default {
       list: "manage/list",
       total: "manage/total",
       size: "manage/size",
+      page:"manage/page"
     }),
   },
 

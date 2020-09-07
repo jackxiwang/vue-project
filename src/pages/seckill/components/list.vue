@@ -231,6 +231,9 @@ export default {
       if (this.test()) {
         return;
       }
+      // console.log(
+      //   this.form.begintime
+      // );
       reqSeckReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);

@@ -56,7 +56,7 @@ export default {
           { required: true, message: "请选择所属角色", trigger: "change" },
         ],
         username: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { required: true, message: "请输入用户密码", trigger: "blur" },
         ],
       },
     };

@@ -139,9 +139,15 @@ export default {
         ],
 
         price: [{ required: true, message: "请输入价格", trigger: "blur" }],
-        market_price: [{ required: true, message: "请填写市场价格", trigger: "blur" }],
-        specsid: [{ required: true, message: "请选择商品规格", trigger: "change" }],
-        specsattr: [{ required: true, message: "请选择规格属性", trigger: "change" }],
+        market_price: [
+          { required: true, message: "请填写市场价格", trigger: "blur" },
+        ],
+        specsid: [
+          { required: true, message: "请选择商品规格", trigger: "change" },
+        ],
+        specsattr: [
+          { required: true, message: "请选择规格属性", trigger: "change" },
+        ],
       },
       width: "180px",
     };
@@ -219,8 +225,8 @@ export default {
         status: 1,
       };
       this.cateDetailList = [];
-        this.specDetailList = [];
-        this.imgUrl = "";
+      this.specDetailList = [];
+      this.imgUrl = "";
     },
     // 编辑菜单
     look(id) {
@@ -243,7 +249,7 @@ export default {
     reset() {
       this.$refs.rule.clearValidate();
       if (this.form.goodsname === "") {
-        warningAlert("请填写菜单名称");
+        warningAlert("请填写商品名称");
         return;
       }
       if (this.form.first_cateid === "") {
@@ -262,6 +268,10 @@ export default {
         warningAlert("请填写市场价格");
         return;
       }
+      if (!this.form.img) {
+        warningAlert("请上传图片");
+        return;
+      }
       if (this.form.specsid === "") {
         warningAlert("请选择商品规格");
         return;
@@ -270,7 +280,10 @@ export default {
         warningAlert("请选择规格属性");
         return;
       }
-
+      if (this.form.description === "") {
+        warningAlert("请添加商品描述");
+        return;
+      }
       this.form.description = this.editor.txt.html();
       reqGoodsReset(this.form).then((res) => {
         if (res.data.code == 200) {
@@ -288,7 +301,7 @@ export default {
     add() {
       this.$refs.rule.clearValidate();
       if (this.form.goodsname === "") {
-        warningAlert("请填写菜单名称");
+        warningAlert("请填写商品名称");
         return;
       }
       if (this.form.first_cateid === "") {
@@ -296,7 +309,31 @@ export default {
         return;
       }
       if (this.form.second_cateid === "") {
-        warningAlert("请选择一级分类");
+        warningAlert("请选择二级分类");
+        return;
+      }
+      if (this.form.price === "") {
+        warningAlert("请填写价格");
+        return;
+      }
+      if (this.form.market_price === "") {
+        warningAlert("请填写市场价格");
+        return;
+      }
+      if (!this.form.img) {
+        warningAlert("请上传图片");
+        return;
+      }
+      if (this.form.specsid === "") {
+        warningAlert("请选择商品规格");
+        return;
+      }
+      if (this.form.specsattr.length === 0) {
+        warningAlert("请选择规格属性");
+        return;
+      }
+      if (this.form.description === "") {
+        warningAlert("请添加商品描述");
         return;
       }
       this.form.description = this.editor.txt.html();

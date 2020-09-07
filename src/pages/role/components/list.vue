@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed = 'close'>
+    <el-dialog :title="info.title" :visible.sync="info.isShow" @closed="close">
       <el-form :model="form" :rules="rules" ref="rule">
         <el-form-item label="角色名称" :label-width="width" prop="rolename">
           <el-input v-model="form.rolename" autocomplete="off"></el-input>
@@ -21,7 +21,11 @@
   </div>
 </template>
 <script>
-import { reqRoleAddList,reqroleDetail,reqRoleReset } from "../../../util/request";
+import {
+  reqRoleAddList,
+  reqroleDetail,
+  reqRoleReset,
+} from "../../../util/request";
 import { mapActions, mapGetters } from "vuex";
 import { successAlert, warningAlert } from "../../../util/alert";
 export default {
@@ -38,17 +42,17 @@ export default {
         children: "children",
         label: "title",
       },
-      rules:{
-        rolename:[
-          { required: true, message: '请输入角色名称', trigger: 'blur' }
-        ]
-      }
+      rules: {
+        rolename: [
+          { required: true, message: "请输入角色名称", trigger: "blur" },
+        ],
+      },
     };
   },
   computed: {
     ...mapGetters({
       data: "menu/list",
-      roleData:"role/list"
+      roleData: "role/list",
     }),
   },
   methods: {
@@ -56,8 +60,8 @@ export default {
       reqMenuList: "menu/changeMenu",
       reqRoleList: "role/changeRole",
     }),
-    close(){
-      this.$refs.rule.clearValidate()
+    close() {
+      this.$refs.rule.clearValidate();
       this.info.edit && this.empty();
     },
     hide() {
@@ -73,62 +77,69 @@ export default {
     },
     // 添加信息
     add() {
-      this.$refs.rule.clearValidate()
-      if(this.form.rolename === ''){
-        warningAlert('请填写角色名称')
-        return
+      let menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
+      this.$refs.rule.clearValidate();
+      if (this.form.rolename === "") {
+        warningAlert("请填写角色名称");
+        return;
+      }
+      if (JSON.parse(menus).length === 0) {
+        warningAlert("请选择角色权限");
+        return;
+      }
+      this.form.menus = menus;
+      // reqRoleAddList(this.form).then((res) => {
+      //   if (res.data.code == 200) {
+      //     successAlert(res.data.msg);
+      //     this.hide();
+      //     this.empty();
+      //     this.reqRoleList();
+      //   }else {
+      //     warningAlert(res.data.msg)
+      //   }
+      // });
+    },
+    // 编辑查看信息
+    look(id) {
+      reqroleDetail(id).then((res) => {
+        if (res.data.code == 200) {
+          this.form = res.data.list;
+          this.form.id = id;
+          this.$refs.tree.setCheckedKeys(JSON.parse(res.data.list.menus));
+        } else {
+          warningAlert(res.data.msg);
+        }
+      });
+    },
+    // 修改信息
+    reset() {
+      this.$refs.rule.clearValidate();
+      if (this.form.rolename === "") {
+        warningAlert("请填写角色名称");
+        return;
+      }
+      if (this.form.menus.length <= 0) {
+        warningAlert("请选择角色权限");
+        return;
       }
       let menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
       this.form.menus = menus;
-      reqRoleAddList(this.form).then((res) => {
+      reqRoleReset(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
           this.hide();
           this.empty();
           this.reqRoleList();
-        }else {
-          warningAlert(res.data.msg)
+        } else {
+          warningAlert(res.data.msg);
         }
       });
     },
-    // 编辑查看信息
-    look(id){
-      reqroleDetail(id).then(res=>{
-        if(res.data.code == 200){
-          this.form = res.data.list;
-          this.form.id = id;
-          this.$refs.tree.setCheckedKeys(JSON.parse(res.data.list.menus))
-        }else {
-          warningAlert(res.data.msg)
-        }
-      })
-    },
-    // 修改信息
-    reset(){
-      this.$refs.rule.clearValidate()
-      if(this.form.rolename === ''){
-        warningAlert('请填写角色名称')
-        return
-      }
-      let menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
-      this.form.menus = menus;
-      reqRoleReset(this.form).then(res=>{
-        if(res.data.code == 200){
-          successAlert(res.data.msg);
-          this.hide();
-          this.empty();
-          this.reqRoleList();
-        }else {
-          warningAlert(res.data.msg)
-        }
-      })
-    }
   },
   mounted() {
-    if(this.data.length === 0){
+    if (this.data.length === 0) {
       this.reqMenuList();
     }
-    
   },
 };
 </script>

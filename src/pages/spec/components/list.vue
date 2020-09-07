@@ -120,6 +120,10 @@ export default {
         return;
       }
       let attrs = this.attrList.map((item) => item.value);
+      if (!attrs.every(item=>item)) {
+        warningAlert("请填写商品属性");
+        return;
+      }
       this.form.attrs = JSON.stringify(attrs);
       reqSpecsReset(this.form).then((res) => {
         if (res.data.code == 200) {
@@ -141,7 +145,7 @@ export default {
         return;
       }
       let attrs = this.attrList.map((item) => item.value);
-      if (attrs.length <= 1 || attrs[0] === "") {
+      if (!attrs.every(item=>item)) {
         warningAlert("请填写商品属性");
         return;
       }
