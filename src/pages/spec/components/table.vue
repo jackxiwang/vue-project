@@ -35,6 +35,7 @@
       :pager-count="5"
       layout="prev, pager, next"
       :total="total"
+      :current-page = "page"
       background
       @current-change="changeCurrent"
     ></el-pagination>
@@ -54,7 +55,8 @@ export default {
     ...mapGetters({
       list: "spec/list",
       size:"spec/size",
-      total:"spec/total"
+      total:"spec/total",
+      page:"spec/page"
     }),
   },
   methods: {

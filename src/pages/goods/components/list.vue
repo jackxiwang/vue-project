@@ -280,7 +280,8 @@ export default {
         warningAlert("请选择规格属性");
         return;
       }
-      if (this.form.description === "") {
+      this.form.description = this.editor.txt.html();
+      if (this.form.description == '<p><br></p>') {
         warningAlert("请添加商品描述");
         return;
       }
@@ -332,11 +333,13 @@ export default {
         warningAlert("请选择规格属性");
         return;
       }
-      if (this.form.description === "") {
+      this.form.description = this.editor.txt.html();
+      if (this.form.description == '<p><br></p>') {
         warningAlert("请添加商品描述");
         return;
       }
-      this.form.description = this.editor.txt.html();
+    
+    
       reqGoodsAddList(this.form).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
