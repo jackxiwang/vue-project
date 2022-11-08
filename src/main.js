@@ -24,6 +24,7 @@ Vue.prototype.$preImg = 'http://localhost:3000/'
 // vuex仓库
 import store from './store/index'
 /* eslint-disable no-new */
+//实验
 new Vue({
   el: '#app',
   router,
